@@ -7,7 +7,7 @@ SERVICE_ACCOUNT_EMAIL = os.environ['SERVICE_ACCOUNT_EMAIL']
 KEY_FILE = os.environ['KEY_FILE']
 SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
 
-def main():
+def build_service():
     print('setup credentials')
     # build service acount using p12 file, based on
     # https://stackoverflow.com/a/35666374/1016377
@@ -16,7 +16,11 @@ def main():
     print('setup service')
     http = httplib2.Http()
     http = credentials.authorize(http)
-    service = build('androidpublisher', 'v3', http=http)
+    return build('androidpublisher', 'v3', http=http)
+
+def main():
+    service = build_service()
+    print('bye')
 
 if __name__ == '__main__':
     main()
