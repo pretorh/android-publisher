@@ -11,7 +11,8 @@ def build_service():
     print('setup credentials')
     # build service acount using p12 file, based on
     # https://stackoverflow.com/a/35666374/1016377
-    credentials = ServiceAccountCredentials.from_p12_keyfile(SERVICE_ACCOUNT_EMAIL, KEY_FILE, scopes=[SCOPE])
+    credentials = ServiceAccountCredentials.from_p12_keyfile(
+        SERVICE_ACCOUNT_EMAIL, KEY_FILE, scopes=[SCOPE])
 
     print('setup service')
     http = httplib2.Http()
