@@ -6,6 +6,10 @@ from apiclient.discovery import build
 SERVICE_ACCOUNT_EMAIL = os.environ['SERVICE_ACCOUNT_EMAIL']
 KEY_FILE = os.environ['KEY_FILE']
 PACKAGE_NAME = os.environ['PACKAGE_NAME']
+TRACK = os.environ['RELEASE_TRACK']
+VERSION_CODE = os.environ['VERSION_CODE']
+VERSION_NAME = os.environ['VERSION_NAME']
+VERSION_NOTES = os.environ['VERSION_NOTES']
 
 SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
 
@@ -29,9 +33,31 @@ def create_edit(service):
     print('setup edit: %s' % (edit_id))
     return edit_id
 
+def update_track(service, edit_id):
+    print('update track %s' % (TRACK))
+    request = service.edits().tracks().update(
+        editId=edit_id,
+        track=TRACK,
+        packageName=PACKAGE_NAME,
+        body={
+            u'releases': [{
+                u'name': VERSION_NAME,
+                u'versionCodes': [VERSION_CODE],
+                u'userFraction': 1,
+                u'releaseNotes': [{
+                    u'language': u'en-GB',
+                    u'text': VERSION_NOTES
+                }],
+                u'status': u'inProgress',
+            }]
+        })
+    response = request.execute()
+    print('setup with: %s' % (str(response['releases'])))
+
 def main():
     service = build_service()
     edit_id = create_edit(service)
+    update_track(service, edit_id)
     print('bye')
 
 if __name__ == '__main__':
