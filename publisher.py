@@ -5,6 +5,8 @@ from apiclient.discovery import build
 
 SERVICE_ACCOUNT_EMAIL = os.environ['SERVICE_ACCOUNT_EMAIL']
 KEY_FILE = os.environ['KEY_FILE']
+PACKAGE_NAME = os.environ['PACKAGE_NAME']
+
 SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
 
 def build_service():
@@ -19,8 +21,17 @@ def build_service():
     http = credentials.authorize(http)
     return build('androidpublisher', 'v3', http=http)
 
+def create_edit(service):
+    print('setup edit')
+    request = service.edits().insert(body={}, packageName=PACKAGE_NAME)
+    result = request.execute()
+    edit_id = result['id']
+    print('setup edit: %s' % (edit_id))
+    return edit_id
+
 def main():
     service = build_service()
+    edit_id = create_edit(service)
     print('bye')
 
 if __name__ == '__main__':
