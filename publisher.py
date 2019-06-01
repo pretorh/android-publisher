@@ -43,12 +43,11 @@ def update_track(service, edit_id):
             u'releases': [{
                 u'name': VERSION_NAME,
                 u'versionCodes': [VERSION_CODE],
-                u'userFraction': 1,
                 u'releaseNotes': [{
                     u'language': u'en-GB',
                     u'text': VERSION_NOTES
                 }],
-                u'status': u'inProgress',
+                u'status': u'completed',
             }]
         })
     response = request.execute()
