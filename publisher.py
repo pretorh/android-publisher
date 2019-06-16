@@ -61,13 +61,3 @@ def valid_and_commit_edit(service, edit_id):
     print('commiting')
     response = service.edits().commit(editId=edit_id, packageName=PACKAGE_NAME).execute()
     print('commited %s' % (response))
-
-def main():
-    service = build_service()
-    edit_id = create_edit(service)
-    update_track(service, edit_id)
-    valid_and_commit_edit(service, edit_id)
-    print('bye')
-
-if __name__ == '__main__':
-    main()
