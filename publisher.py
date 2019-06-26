@@ -49,7 +49,7 @@ def update_track(service, edit_id, track, version):
     response = request.execute()
     print('setup with: %s' % (str(response['releases'])))
 
-def valid_and_commit_edit(service, edit_id):
+def validate_and_commit_edit(service, edit_id):
     print('validating')
     response = service.edits().validate(editId=edit_id, packageName=PACKAGE_NAME).execute()
     print('validated %s' % (response))
