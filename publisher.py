@@ -62,7 +62,7 @@ def valid_and_commit_edit(service, edit_id):
     response = service.edits().commit(editId=edit_id, packageName=PACKAGE_NAME).execute()
     print('commited %s' % (response))
 
-def upload(service, edit_id, apk_file):
+def upload_bundle(service, edit_id, apk_file):
     apk_response = service.edits().bundles().upload(
         editId=edit_id,
         packageName=PACKAGE_NAME,

@@ -6,7 +6,7 @@ def upload():
 
     service = publisher.build_service()
     edit_id = publisher.create_edit(service)
-    publisher.upload(service, edit_id, apk_file)
+    publisher.upload_bundle(service, edit_id, apk_file)
     print('bye')
 
 if __name__ == '__main__':
