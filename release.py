@@ -1,4 +1,5 @@
 import os
+import sys
 import publisher
 
 TRACK = os.environ['RELEASE_TRACK']
@@ -15,6 +16,9 @@ def release():
 
     service = publisher.build_service()
     edit_id = publisher.create_edit(service)
+    if len(sys.argv) == 2:
+        apk_file = sys.argv[1]
+        publisher.upload_bundle(service, edit_id, apk_file)
     publisher.update_track(service, edit_id, TRACK, version)
     publisher.validate_and_commit_edit(service, edit_id)
     print('bye')
