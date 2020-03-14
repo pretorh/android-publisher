@@ -3,8 +3,6 @@ import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
 from apiclient.discovery import build
 
-PACKAGE_NAME = os.environ['PACKAGE_NAME']
-
 SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
 
 def build_service(service_account_email, key_file):
@@ -19,20 +17,20 @@ def build_service(service_account_email, key_file):
     http = credentials.authorize(http)
     return build('androidpublisher', 'v3', http=http)
 
-def create_edit(service):
+def create_edit(service, package_name):
     print('setup edit')
-    request = service.edits().insert(body={}, packageName=PACKAGE_NAME)
+    request = service.edits().insert(body={}, packageName=package_name)
     result = request.execute()
     edit_id = result['id']
     print('setup edit: %s' % (edit_id))
     return edit_id
 
-def update_track(service, edit_id, track, version):
+def update_track(service, package_name, edit_id, track, version):
     print('update track %s' % (track))
     request = service.edits().tracks().update(
         editId=edit_id,
         track=track,
-        packageName=PACKAGE_NAME,
+        packageName=package_name,
         body={
             u'track': track,
             u'releases': [{
@@ -48,20 +46,20 @@ def update_track(service, edit_id, track, version):
     response = request.execute()
     print('setup with: %s' % (str(response['releases'])))
 
-def validate_and_commit_edit(service, edit_id):
+def validate_and_commit_edit(service, package_name, edit_id):
     print('validating')
-    response = service.edits().validate(editId=edit_id, packageName=PACKAGE_NAME).execute()
+    response = service.edits().validate(editId=edit_id, packageName=package_name).execute()
     print('validated %s' % (response))
 
     print('commiting')
-    response = service.edits().commit(editId=edit_id, packageName=PACKAGE_NAME).execute()
+    response = service.edits().commit(editId=edit_id, packageName=package_name).execute()
     print('commited %s' % (response))
 
-def upload_bundle(service, edit_id, apk_file):
+def upload_bundle(service, package_name, edit_id, apk_file):
     print('uploading')
     apk_response = service.edits().bundles().upload(
         editId=edit_id,
-        packageName=PACKAGE_NAME,
+        packageName=package_name,
         media_body=apk_file,
         media_mime_type='application/octet-stream',
         ).execute()
