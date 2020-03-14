@@ -36,6 +36,7 @@ def update_track(service, edit_id, track, version):
         track=track,
         packageName=PACKAGE_NAME,
         body={
+            u'track': track,
             u'releases': [{
                 u'name': version['name'],
                 u'versionCodes': [version['code']],
