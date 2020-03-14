@@ -2,6 +2,8 @@ import os
 import sys
 import publisher
 
+publisher.print_info()
+
 def release():
     SERVICE_ACCOUNT_EMAIL = os.environ['SERVICE_ACCOUNT_EMAIL']
     KEY_FILE = os.environ['KEY_FILE']

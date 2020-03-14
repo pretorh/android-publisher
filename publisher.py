@@ -5,6 +5,9 @@ import apiclient
 
 SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
 
+def print_info():
+    print('api client: %s' % (apiclient.__version__));
+
 def build_service(service_account_email, key_file):
     print('setup credentials')
     # build service acount using p12 file, based on
