@@ -2,12 +2,12 @@ import os
 import sys
 import publisher
 
-TRACK = os.environ['RELEASE_TRACK']
-VERSION_NAME = os.environ['VERSION_NAME']
-VERSION_CODE = os.environ['VERSION_CODE']
-VERSION_NOTES = os.environ['VERSION_NOTES']
-
 def release():
+    TRACK = os.environ['RELEASE_TRACK']
+    VERSION_NAME = os.environ['VERSION_NAME']
+    VERSION_CODE = os.environ['VERSION_CODE']
+    VERSION_NOTES = os.environ['VERSION_NOTES']
+
     version = {
         'name': VERSION_NAME,
         'code': VERSION_CODE,
