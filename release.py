@@ -3,6 +3,9 @@ import sys
 import publisher
 
 def release():
+    SERVICE_ACCOUNT_EMAIL = os.environ['SERVICE_ACCOUNT_EMAIL']
+    KEY_FILE = os.environ['KEY_FILE']
+
     TRACK = os.environ['RELEASE_TRACK']
     VERSION_NAME = os.environ['VERSION_NAME']
     VERSION_CODE = os.environ['VERSION_CODE']
@@ -14,7 +17,7 @@ def release():
         'notes': VERSION_NOTES,
     }
 
-    service = publisher.build_service()
+    service = publisher.build_service(SERVICE_ACCOUNT_EMAIL, KEY_FILE)
     edit_id = publisher.create_edit(service)
     if len(sys.argv) == 2:
         apk_file = sys.argv[1]

@@ -3,18 +3,16 @@ import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
 from apiclient.discovery import build
 
-SERVICE_ACCOUNT_EMAIL = os.environ['SERVICE_ACCOUNT_EMAIL']
-KEY_FILE = os.environ['KEY_FILE']
 PACKAGE_NAME = os.environ['PACKAGE_NAME']
 
 SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
 
-def build_service():
+def build_service(service_account_email, key_file):
     print('setup credentials')
     # build service acount using p12 file, based on
     # https://stackoverflow.com/a/35666374/1016377
     credentials = ServiceAccountCredentials.from_p12_keyfile(
-        SERVICE_ACCOUNT_EMAIL, KEY_FILE, scopes=[SCOPE])
+        service_account_email, key_file, scopes=[SCOPE])
 
     print('setup service')
     http = httplib2.Http()
