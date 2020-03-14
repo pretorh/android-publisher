@@ -1,4 +1,4 @@
-import os
+import os, time
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
 import apiclient
@@ -6,7 +6,9 @@ import apiclient
 SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
 
 def print_info():
+    print('script date: %s' % (time.ctime(os.path.getmtime(__file__))))
     print('api client: %s' % (apiclient.__version__));
+    print('')
 
 def build_service(service_account_email, key_file):
     print('setup credentials')
