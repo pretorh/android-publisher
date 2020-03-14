@@ -30,4 +30,7 @@ def release():
     print('bye')
 
 if __name__ == '__main__':
+    if len(sys.argv) >= 2 and sys.argv[1] == '--version':
+        print('bye')
+        sys.exit(0)
     release()
