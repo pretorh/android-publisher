@@ -1,7 +1,7 @@
 import os
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
-from apiclient.discovery import build
+import apiclient
 
 SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
 
@@ -15,7 +15,7 @@ def build_service(service_account_email, key_file):
     print('setup service')
     http = httplib2.Http()
     http = credentials.authorize(http)
-    return build('androidpublisher', 'v3', http=http)
+    return apiclient.discovery.build('androidpublisher', 'v3', http=http)
 
 def create_edit(service, package_name):
     print('setup edit')
