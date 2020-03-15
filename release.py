@@ -21,7 +21,7 @@ def release():
     }
 
     service = publisher.build_service(SERVICE_ACCOUNT_EMAIL, KEY_FILE)
-    edit_id = publisher.create_edit(service)
+    edit_id = publisher.create_edit(service, PACKAGE_NAME)
     if len(sys.argv) == 2:
         apk_file = sys.argv[1]
         publisher.upload_bundle(service, PACKAGE_NAME, edit_id, apk_file)
