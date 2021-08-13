@@ -59,12 +59,13 @@ def validate_and_commit_edit(service, package_name, edit_id):
     response = service.edits().commit(editId=edit_id, packageName=package_name).execute()
     print('commited %s' % (response))
 
-def upload_bundle(service, package_name, edit_id, apk_file):
-    print('uploading')
-    apk_response = service.edits().bundles().upload(
+def upload_bundle(service, package_name, edit_id, aab_file):
+    print('uploading %s' % (aab_file))
+    request = service.edits().bundles().upload(
         editId=edit_id,
         packageName=package_name,
-        media_body=apk_file,
+        media_body=aab_file,
         media_mime_type='application/octet-stream',
-        ).execute()
-    print('uploaded, %s' % (apk_response))
+    )
+    response = request.execute()
+    print('uploaded, %s' % (response))
