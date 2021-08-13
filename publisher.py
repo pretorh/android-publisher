@@ -10,19 +10,17 @@ def print_info():
     print('')
 
 def build_service(service_account_email, key_file):
-    print('setup credentials')
+    print('setup credentials and building service')
     # build service acount using p12 file, based on
     # https://stackoverflow.com/a/35666374/1016377
     credentials = ServiceAccountCredentials.from_p12_keyfile(
         service_account_email, key_file, scopes=[SCOPE])
 
-    print('setup service')
     http = httplib2.Http()
     http = credentials.authorize(http)
     return apiclient.discovery.build('androidpublisher', 'v3', http=http)
 
 def create_edit(service, package_name):
-    print('setup edit')
     request = service.edits().insert(body={}, packageName=package_name)
     result = request.execute()
     edit_id = result['id']
@@ -51,11 +49,9 @@ def update_track(service, package_name, edit_id, track, version):
     print('setup with: %s' % (str(response['releases'])))
 
 def validate_and_commit_edit(service, package_name, edit_id):
-    print('validating')
     response = service.edits().validate(editId=edit_id, packageName=package_name).execute()
     print('validated %s' % (response))
 
-    print('commiting')
     response = service.edits().commit(editId=edit_id, packageName=package_name).execute()
     print('commited %s' % (response))
 
