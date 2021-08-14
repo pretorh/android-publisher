@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import sys
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
 import apiclient
@@ -75,11 +76,16 @@ def __run_from_cli_args(flags):
 
     service = build_service(flags.service_account_email, flags.p12key.name)
     edit_id = create_edit(service, flags.package_name)
-    print("WARNING: actions are not yet implemented")
+    update_track(service, flags.package_name, edit_id, flags.track, version={
+        'name': flags.play_console_release_name,
+        'code': flags.version_code,
+        'notes': flags.release_notes,
+    })
     validate_and_commit_edit(service, flags.package_name, edit_id)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(add_help=True)
+    # authentication and app details
     parser.add_argument('service_account_email',
                         metavar='service-account-email',
                         help='The email address of the service account used for authentication ' +
@@ -91,4 +97,27 @@ if __name__ == '__main__':
                         metavar='package-name',
                         help='Android package name (applicationId, reverse domain name)')
 
-    __run_from_cli_args(parser.parse_args())
+    # release details
+    release = parser.add_argument_group('release')
+    release.add_argument('version_code',
+                         metavar='version-code',
+                         type=int,
+                         help='Android Version Code (int)')
+    release.add_argument('--track',
+                         default='internal',
+                         help='The Play Store track that should be updated (default: "internal")')
+    release.add_argument('--play-console-release-name',
+                         help='The name of the release in the Play store console ' +
+                              '(default: same as the version code)')
+    release.add_argument('--release-notes-file',
+                         type=argparse.FileType('r'),
+                         default=sys.stdin,
+                         help='Read release notes from file. (default: read from stdin)')
+
+    args = parser.parse_args()
+    if not args.play_console_release_name:
+        args.play_console_release_name = str(args.version_code)
+    args.release_notes = args.release_notes_file.read()
+    args.release_notes_file.close()
+
+    __run_from_cli_args(args)
