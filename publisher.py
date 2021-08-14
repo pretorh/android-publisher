@@ -8,7 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import apiclient
 
 SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
-SCRIPT_VERSION = '2021-08-13'
+SCRIPT_VERSION = '2021-08-14'
 
 def print_info():
     print('publisher.py: %s' % SCRIPT_VERSION)

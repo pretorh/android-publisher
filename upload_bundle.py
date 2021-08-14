@@ -1,6 +1,8 @@
 import sys
 import publisher
 
+print("WARNING: this script is deprecated, use publisher.py as a cli")
+
 def upload():
     apk_file = sys.argv[1]
 
