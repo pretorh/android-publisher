@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import sys
+import os
+import stat
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
 import apiclient
@@ -120,7 +122,11 @@ if __name__ == '__main__':
     args.p12key_path = args.p12key.name
     args.p12key.close()
     if args.release_notes_file == sys.stdin:
-        print("Enter release notes:")
+        mode = os.fstat(sys.stdin.fileno()).st_mode
+        if stat.S_ISFIFO(mode) or stat.S_ISREG(mode):
+            pass # piped or redirected
+        else:
+            print("Enter release notes:")
     args.release_notes = args.release_notes_file.read()
     args.release_notes_file.close()
 
