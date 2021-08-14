@@ -72,8 +72,6 @@ def upload_bundle(service, package_name, edit_id, aab_file):
 # running as cli
 
 def __run_from_cli_args(flags):
-    print_info()
-
     service = build_service(flags.service_account_email, flags.p12key_path)
     edit_id = create_edit(service, flags.package_name)
     update_track(service, flags.package_name, edit_id, flags.track, version={
@@ -115,10 +113,14 @@ if __name__ == '__main__':
                          help='Read release notes from file. (default: read from stdin)')
 
     args = parser.parse_args()
+    print_info()
+
     if not args.play_console_release_name:
         args.play_console_release_name = str(args.version_code)
     args.p12key_path = args.p12key.name
     args.p12key.close()
+    if args.release_notes_file == sys.stdin:
+        print("Enter release notes:")
     args.release_notes = args.release_notes_file.read()
     args.release_notes_file.close()
 
