@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+import argparse
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
 import apiclient
@@ -65,3 +67,28 @@ def upload_bundle(service, package_name, edit_id, aab_file):
     )
     response = request.execute()
     print('uploaded, %s' % (response))
+
+# running as cli
+
+def __run_from_cli_args(flags):
+    print_info()
+
+    service = build_service(flags.service_account_email, flags.p12key.name)
+    edit_id = create_edit(service, flags.package_name)
+    print("WARNING: actions are not yet implemented")
+    validate_and_commit_edit(service, flags.package_name, edit_id)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(add_help=True)
+    parser.add_argument('service_account_email',
+                        metavar='service-account-email',
+                        help='The email address of the service account used for authentication ' +
+                            '(something like ...@api-...-...iam.gserviceaccount.com)')
+    parser.add_argument('p12key',
+                        type=open,  # open to ensure the file exists
+                        help='Path to the p12 certificate key file for authentication')
+    parser.add_argument('package_name',
+                        metavar='package-name',
+                        help='Android package name (applicationId, reverse domain name)')
+
+    __run_from_cli_args(parser.parse_args())
