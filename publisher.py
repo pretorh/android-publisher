@@ -76,6 +76,8 @@ def upload_bundle(service, package_name, edit_id, aab_file):
 def __run_from_cli_args(flags):
     service = build_service(flags.service_account_email, flags.p12key_path)
     edit_id = create_edit(service, flags.package_name)
+    if flags.upload_aab_path:
+        upload_bundle(service, flags.package_name, edit_id, flags.upload_aab_path)
     update_track(service, flags.package_name, edit_id, flags.track, version={
         'name': flags.play_console_release_name,
         'code': flags.version_code,
@@ -114,6 +116,12 @@ if __name__ == '__main__':
                          default=sys.stdin,
                          help='Read release notes from file. (default: read from stdin)')
 
+    # upload bundle
+    release.add_argument('--upload-aab',
+                        type=argparse.FileType('r'),
+                        help='The path to a bundle (*.aab) file that to upload ' +
+                             'as part of the release')
+
     args = parser.parse_args()
     print_info()
 
@@ -129,5 +137,11 @@ if __name__ == '__main__':
             print("Enter release notes:")
     args.release_notes = args.release_notes_file.read()
     args.release_notes_file.close()
+
+    if args.upload_aab:
+        args.upload_aab_path = args.upload_aab.read()
+        args.upload_aab.close()
+    else:
+        args.upload_aab_path = None
 
     __run_from_cli_args(args)
