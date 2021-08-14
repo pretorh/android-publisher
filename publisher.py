@@ -74,7 +74,7 @@ def upload_bundle(service, package_name, edit_id, aab_file):
 def __run_from_cli_args(flags):
     print_info()
 
-    service = build_service(flags.service_account_email, flags.p12key.name)
+    service = build_service(flags.service_account_email, flags.p12key_path)
     edit_id = create_edit(service, flags.package_name)
     update_track(service, flags.package_name, edit_id, flags.track, version={
         'name': flags.play_console_release_name,
@@ -91,7 +91,7 @@ if __name__ == '__main__':
                         help='The email address of the service account used for authentication ' +
                             '(something like ...@api-...-...iam.gserviceaccount.com)')
     parser.add_argument('p12key',
-                        type=open,  # open to ensure the file exists
+                        type=argparse.FileType('r'),
                         help='Path to the p12 certificate key file for authentication')
     parser.add_argument('package_name',
                         metavar='package-name',
@@ -117,6 +117,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if not args.play_console_release_name:
         args.play_console_release_name = str(args.version_code)
+    args.p12key_path = args.p12key.name
+    args.p12key.close()
     args.release_notes = args.release_notes_file.read()
     args.release_notes_file.close()
 
