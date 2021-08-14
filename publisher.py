@@ -122,8 +122,8 @@ if __name__ == '__main__':
                         help='The path to a bundle (*.aab) file that to upload ' +
                              'as part of the release')
 
-    args = parser.parse_args()
     print_info()
+    args = parser.parse_args()
 
     if not args.play_console_release_name:
         args.play_console_release_name = str(args.version_code)
