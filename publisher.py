@@ -91,7 +91,7 @@ if __name__ == '__main__':
     parser.add_argument('service_account_email',
                         metavar='service-account-email',
                         help='The email address of the service account used for authentication ' +
-                            '(something like ...@api-...-...iam.gserviceaccount.com)')
+                             '(something like ...@api-...-...iam.gserviceaccount.com)')
     parser.add_argument('p12key',
                         type=argparse.FileType('br'),
                         help='Path to the p12 certificate key file for authentication')
@@ -109,17 +109,20 @@ if __name__ == '__main__':
                          default='internal',
                          help='The Play Store track that should be updated (default: "internal")')
     release.add_argument('--play-console-release-name',
+                         metavar='release-name',
                          help='The name of the release in the Play store console ' +
                               '(default: same as the version code)')
     release.add_argument('--release-notes-file',
+                         metavar='file',
                          type=argparse.FileType('r'),
                          default=sys.stdin,
                          help='Read release notes from file. (default: read from stdin)')
 
     # upload bundle
     release.add_argument('--upload-aab',
-                        help='The path to a bundle (*.aab) file that to upload ' +
-                             'as part of the release')
+                         metavar='aab-file',
+                         help='The path to a bundle (*.aab) file that to upload ' +
+                              'as part of the release')
 
     print_info()
     args = parser.parse_args()
