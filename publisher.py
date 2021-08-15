@@ -92,10 +92,11 @@ def __run_from_cli_args(flags):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(add_help=True)
     # authentication and app details
-    parser.add_argument('--p12',
-                        nargs=2,
-                        metavar=('someone@api-xxx.iam.gserviceaccount.com', 'p12keyfile'),
-                        help='Use a service account email and a p12 key file for authentication')
+    auth_params = parser.add_mutually_exclusive_group(required=True)
+    auth_params.add_argument('--p12',
+                             nargs=2,
+                             metavar=('someone@api-xxx.iam.gserviceaccount.com', 'p12keyfile'),
+                             help='Use a service account email and p12 key file for authentication')
     parser.add_argument('package_name',
                         metavar='package-name',
                         help='Android package name (applicationId, reverse domain name)')
