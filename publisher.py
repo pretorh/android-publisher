@@ -105,6 +105,10 @@ if __name__ == '__main__':
                              nargs=2,
                              metavar=('someone@api-xxx.iam.gserviceaccount.com', 'p12keyfile'),
                              help='Use a service account email and p12 key file for authentication')
+    auth_params.add_argument('--json',
+                             nargs=1,
+                             metavar=('json-key-file'),
+                             help='Use a json key file for authentication')
     parser.add_argument('package_name',
                         metavar='package-name',
                         help='Android package name (applicationId, reverse domain name)')
@@ -140,11 +144,17 @@ if __name__ == '__main__':
     if not args.play_console_release_name:
         args.play_console_release_name = str(args.version_code)
 
+    # authentication type
     if args.p12:
         args.p12_service_account_email, args.p12_key_path = args.p12
         args.p12 = True
         if not os.path.isfile(args.p12_key_path):
             raise Exception('p12 key file not found: %s' % args.p12_key_path)
+    elif args.json:
+        args.json_key_file = args.json[0]
+        args.json = True
+        if not os.path.isfile(args.json_key_file):
+            raise Exception('json key file not found: %s' % args.json_key_file)
 
     if args.release_notes_file == sys.stdin:
         mode = os.fstat(sys.stdin.fileno()).st_mode
