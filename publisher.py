@@ -25,6 +25,14 @@ def build_service(service_account_email, key_file):
     http = credentials.authorize(http)
     return apiclient.discovery.build('androidpublisher', 'v3', http=http)
 
+def build_service_from_json_file(json_key_file):
+    print('setup credentials and building service from %s' % json_key_file)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(json_key_file)
+
+    http = httplib2.Http()
+    http = credentials.authorize(http)
+    return apiclient.discovery.build('androidpublisher', 'v3', http=http)
+
 def create_edit(service, package_name):
     request = service.edits().insert(body={}, packageName=package_name)
     result = request.execute()
