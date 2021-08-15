@@ -31,7 +31,7 @@ def build_service_from_p12(service_account_email, key_file):
 
 def build_service_from_json_file(json_key_file):
     print('setup credentials and building service from %s' % json_key_file)
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(json_key_file)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(json_key_file, scopes=[SCOPE])
 
     http = httplib2.Http()
     http = credentials.authorize(http)
