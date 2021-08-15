@@ -84,8 +84,10 @@ def upload_bundle(service, package_name, edit_id, aab_file):
 def __run_from_cli_args(flags):
     if flags.p12:
         service = build_service(flags.p12_service_account_email, flags.p12_key_path)
+    elif flags.json:
+        service = build_service_from_json_file(flags.json_key_file)
     else:
-        raise ValueError('Non p12 authentication is not yet implemented')
+        raise ValueError('Unknown authentication type')
 
     edit_id = create_edit(service, flags.package_name)
     if flags.upload_aab:
