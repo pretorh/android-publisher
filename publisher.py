@@ -82,12 +82,12 @@ def upload_bundle(service, package_name, edit_id, aab_file):
 # running as cli
 
 def __run_from_cli_args(flags):
-    if flags.p12:
+    if flags.authentication_type == 'p12':
         service = build_service(flags.p12_service_account_email, flags.p12_key_path)
-    elif flags.json:
+    elif flags.authentication_type == 'json':
         service = build_service_from_json_file(flags.json_key_file)
     else:
-        raise ValueError('Unknown authentication type')
+        raise ValueError('Unknown authentication type %s' % flags.authentication_type)
 
     edit_id = create_edit(service, flags.package_name)
     if flags.upload_aab:
@@ -149,12 +149,14 @@ if __name__ == '__main__':
     # authentication type
     if args.p12:
         args.p12_service_account_email, args.p12_key_path = args.p12
-        args.p12 = True
+        args.p12 = None
+        args.authentication_type = 'p12'
         if not os.path.isfile(args.p12_key_path):
             raise Exception('p12 key file not found: %s' % args.p12_key_path)
     elif args.json:
         args.json_key_file = args.json[0]
-        args.json = True
+        args.json = None
+        args.authentication_type = 'json'
         if not os.path.isfile(args.json_key_file):
             raise Exception('json key file not found: %s' % args.json_key_file)
 
