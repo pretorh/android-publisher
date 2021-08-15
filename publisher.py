@@ -15,6 +15,10 @@ def print_info():
     print('')
 
 def build_service(service_account_email, key_file):
+    print('WARNING: build_service will be removed. use build_service_from_p12')
+    return build_service_from_p12(service_account_email, key_file)
+
+def build_service_from_p12(service_account_email, key_file):
     print('setup credentials and building service')
     # build service acount using p12 file, based on
     # https://stackoverflow.com/a/35666374/1016377
@@ -83,7 +87,7 @@ def upload_bundle(service, package_name, edit_id, aab_file):
 
 def __run_from_cli_args(flags):
     if flags.authentication_type == 'p12':
-        service = build_service(flags.p12_service_account_email, flags.p12_key_path)
+        service = build_service_from_p12(flags.p12_service_account_email, flags.p12_key_path)
     elif flags.authentication_type == 'json':
         service = build_service_from_json_file(flags.json_key_file)
     else:
