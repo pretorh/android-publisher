@@ -3,6 +3,7 @@ import sys
 import publisher
 
 publisher.print_info()
+print("WARNING: this script is deprecated, use publisher.py as a cli")
 
 def release():
     SERVICE_ACCOUNT_EMAIL = os.environ['SERVICE_ACCOUNT_EMAIL']

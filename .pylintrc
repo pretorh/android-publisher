@@ -1,2 +1,2 @@
 [MESSAGES CONTROL]
-disable=import-error
+disable=import-error, missing-function-docstring, missing-module-docstring

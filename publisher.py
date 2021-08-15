@@ -1,29 +1,31 @@
-import os, time
+#!/usr/bin/env python3
+import argparse
+import sys
+import os
+import stat
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
 import apiclient
 
 SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
+SCRIPT_VERSION = '2021-08-14'
 
 def print_info():
-    print('script date: %s' % (time.ctime(os.path.getmtime(__file__))))
-    print('api client: %s' % (apiclient.__version__));
+    print('publisher.py: %s' % SCRIPT_VERSION)
     print('')
 
 def build_service(service_account_email, key_file):
-    print('setup credentials')
+    print('setup credentials and building service')
     # build service acount using p12 file, based on
     # https://stackoverflow.com/a/35666374/1016377
     credentials = ServiceAccountCredentials.from_p12_keyfile(
         service_account_email, key_file, scopes=[SCOPE])
 
-    print('setup service')
     http = httplib2.Http()
     http = credentials.authorize(http)
     return apiclient.discovery.build('androidpublisher', 'v3', http=http)
 
 def create_edit(service, package_name):
-    print('setup edit')
     request = service.edits().insert(body={}, packageName=package_name)
     result = request.execute()
     edit_id = result['id']
@@ -52,20 +54,92 @@ def update_track(service, package_name, edit_id, track, version):
     print('setup with: %s' % (str(response['releases'])))
 
 def validate_and_commit_edit(service, package_name, edit_id):
-    print('validating')
     response = service.edits().validate(editId=edit_id, packageName=package_name).execute()
     print('validated %s' % (response))
 
-    print('commiting')
     response = service.edits().commit(editId=edit_id, packageName=package_name).execute()
     print('commited %s' % (response))
 
-def upload_bundle(service, package_name, edit_id, apk_file):
-    print('uploading')
-    apk_response = service.edits().bundles().upload(
+def upload_bundle(service, package_name, edit_id, aab_file):
+    print('uploading %s' % (aab_file))
+    request = service.edits().bundles().upload(
         editId=edit_id,
         packageName=package_name,
-        media_body=apk_file,
+        media_body=aab_file,
         media_mime_type='application/octet-stream',
-        ).execute()
-    print('uploaded, %s' % (apk_response))
+    )
+    response = request.execute()
+    print('uploaded, %s' % (response))
+
+# running as cli
+
+def __run_from_cli_args(flags):
+    service = build_service(flags.service_account_email, flags.p12key_path)
+    edit_id = create_edit(service, flags.package_name)
+    if flags.upload_aab:
+        upload_bundle(service, flags.package_name, edit_id, flags.upload_aab)
+    update_track(service, flags.package_name, edit_id, flags.track, version={
+        'name': flags.play_console_release_name,
+        'code': flags.version_code,
+        'notes': flags.release_notes,
+    })
+    validate_and_commit_edit(service, flags.package_name, edit_id)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(add_help=True)
+    # authentication and app details
+    parser.add_argument('service_account_email',
+                        metavar='service-account-email',
+                        help='The email address of the service account used for authentication ' +
+                            '(something like ...@api-...-...iam.gserviceaccount.com)')
+    parser.add_argument('p12key',
+                        type=argparse.FileType('br'),
+                        help='Path to the p12 certificate key file for authentication')
+    parser.add_argument('package_name',
+                        metavar='package-name',
+                        help='Android package name (applicationId, reverse domain name)')
+
+    # release details
+    release = parser.add_argument_group('release')
+    release.add_argument('version_code',
+                         metavar='version-code',
+                         type=int,
+                         help='Android Version Code (int)')
+    release.add_argument('--track',
+                         default='internal',
+                         help='The Play Store track that should be updated (default: "internal")')
+    release.add_argument('--play-console-release-name',
+                         help='The name of the release in the Play store console ' +
+                              '(default: same as the version code)')
+    release.add_argument('--release-notes-file',
+                         type=argparse.FileType('r'),
+                         default=sys.stdin,
+                         help='Read release notes from file. (default: read from stdin)')
+
+    # upload bundle
+    release.add_argument('--upload-aab',
+                        help='The path to a bundle (*.aab) file that to upload ' +
+                             'as part of the release')
+
+    print_info()
+    args = parser.parse_args()
+
+    if not args.play_console_release_name:
+        args.play_console_release_name = str(args.version_code)
+    args.p12key_path = args.p12key.name
+    args.p12key.close()
+    if args.release_notes_file == sys.stdin:
+        mode = os.fstat(sys.stdin.fileno()).st_mode
+        if stat.S_ISFIFO(mode) or stat.S_ISREG(mode):
+            pass # piped or redirected
+        else:
+            print("Enter release notes:")
+    args.release_notes = args.release_notes_file.read()
+    args.release_notes_file.close()
+
+    if args.upload_aab:
+        # using a file type causes issues on ci, so check file exist here
+        if not os.path.isfile(args.upload_aab):
+            raise Exception('File not found for --upload-aab: %s' % args.upload_aab)
+
+    __run_from_cli_args(args)
