@@ -74,7 +74,11 @@ def upload_bundle(service, package_name, edit_id, aab_file):
 # running as cli
 
 def __run_from_cli_args(flags):
-    service = build_service(flags.service_account_email, flags.p12key_path)
+    if flags.p12:
+        service = build_service(flags.p12_service_account_email, flags.p12_key_path)
+    else:
+        raise ValueError('Non p12 authentication is not yet implemented')
+
     edit_id = create_edit(service, flags.package_name)
     if flags.upload_aab:
         upload_bundle(service, flags.package_name, edit_id, flags.upload_aab)
@@ -88,13 +92,10 @@ def __run_from_cli_args(flags):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(add_help=True)
     # authentication and app details
-    parser.add_argument('service_account_email',
-                        metavar='service-account-email',
-                        help='The email address of the service account used for authentication ' +
-                             '(something like ...@api-...-...iam.gserviceaccount.com)')
-    parser.add_argument('p12key',
-                        type=argparse.FileType('br'),
-                        help='Path to the p12 certificate key file for authentication')
+    parser.add_argument('--p12',
+                        nargs=2,
+                        metavar=('someone@api-xxx.iam.gserviceaccount.com', 'p12keyfile'),
+                        help='Use a service account email and a p12 key file for authentication')
     parser.add_argument('package_name',
                         metavar='package-name',
                         help='Android package name (applicationId, reverse domain name)')
@@ -129,8 +130,13 @@ if __name__ == '__main__':
 
     if not args.play_console_release_name:
         args.play_console_release_name = str(args.version_code)
-    args.p12key_path = args.p12key.name
-    args.p12key.close()
+
+    if args.p12:
+        args.p12_service_account_email, args.p12_key_path = args.p12
+        args.p12 = True
+        if not os.path.isfile(args.p12_key_path):
+            raise Exception('p12 key file not found: %s' % args.p12_key_path)
+
     if args.release_notes_file == sys.stdin:
         mode = os.fstat(sys.stdin.fileno()).st_mode
         if stat.S_ISFIFO(mode) or stat.S_ISREG(mode):
