@@ -15,11 +15,23 @@ def print_info():
     print('')
 
 def build_service(service_account_email, key_file):
+    print('WARNING: build_service will be removed. use build_service_from_p12')
+    return build_service_from_p12(service_account_email, key_file)
+
+def build_service_from_p12(service_account_email, key_file):
     print('setup credentials and building service')
     # build service acount using p12 file, based on
     # https://stackoverflow.com/a/35666374/1016377
     credentials = ServiceAccountCredentials.from_p12_keyfile(
         service_account_email, key_file, scopes=[SCOPE])
+
+    http = httplib2.Http()
+    http = credentials.authorize(http)
+    return apiclient.discovery.build('androidpublisher', 'v3', http=http)
+
+def build_service_from_json_file(json_key_file):
+    print('setup credentials and building service from %s' % json_key_file)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(json_key_file, scopes=[SCOPE])
 
     http = httplib2.Http()
     http = credentials.authorize(http)
@@ -74,10 +86,12 @@ def upload_bundle(service, package_name, edit_id, aab_file):
 # running as cli
 
 def __run_from_cli_args(flags):
-    if flags.p12:
-        service = build_service(flags.p12_service_account_email, flags.p12_key_path)
+    if flags.authentication_type == 'p12':
+        service = build_service_from_p12(flags.p12_service_account_email, flags.p12_key_path)
+    elif flags.authentication_type == 'json':
+        service = build_service_from_json_file(flags.json_key_file)
     else:
-        raise ValueError('Non p12 authentication is not yet implemented')
+        raise ValueError('Unknown authentication type %s' % flags.authentication_type)
 
     edit_id = create_edit(service, flags.package_name)
     if flags.upload_aab:
@@ -97,6 +111,10 @@ if __name__ == '__main__':
                              nargs=2,
                              metavar=('someone@api-xxx.iam.gserviceaccount.com', 'p12keyfile'),
                              help='Use a service account email and p12 key file for authentication')
+    auth_params.add_argument('--json',
+                             nargs=1,
+                             metavar=('json-key-file'),
+                             help='Use a json key file for authentication')
     parser.add_argument('package_name',
                         metavar='package-name',
                         help='Android package name (applicationId, reverse domain name)')
@@ -132,11 +150,19 @@ if __name__ == '__main__':
     if not args.play_console_release_name:
         args.play_console_release_name = str(args.version_code)
 
+    # authentication type
     if args.p12:
         args.p12_service_account_email, args.p12_key_path = args.p12
-        args.p12 = True
+        args.p12 = None
+        args.authentication_type = 'p12'
         if not os.path.isfile(args.p12_key_path):
             raise Exception('p12 key file not found: %s' % args.p12_key_path)
+    elif args.json:
+        args.json_key_file = args.json[0]
+        args.json = None
+        args.authentication_type = 'json'
+        if not os.path.isfile(args.json_key_file):
+            raise Exception('json key file not found: %s' % args.json_key_file)
 
     if args.release_notes_file == sys.stdin:
         mode = os.fstat(sys.stdin.fileno()).st_mode

@@ -23,8 +23,9 @@ Scroll to "Service accounts", and create a new serivce account (opens steps to f
 
 Create the service account:
 - step 2 is displayed as optional, [but must be setup for Play console](https://stackoverflow.com/a/54717925/1016377) ("Basic" > "Editor" was good enough)
-- copy the service account email address (`...@....iam.gserviceaccount.com`)
-- go to "Keys" tab to create a `P12` key
+- go to "Keys" tab to create a `json` key
+
+you can create/use a `P12` key, but will need the service account email address (`...@....iam.gserviceaccount.com`)
 
 Go back to Play console, and see if the service account is listed. From table, click "Grant Access".
 
