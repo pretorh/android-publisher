@@ -1,2 +1,2 @@
 [MESSAGES CONTROL]
-disable=import-error, missing-function-docstring, missing-module-docstring, redundant-u-string-prefix
+disable=missing-function-docstring, missing-module-docstring
