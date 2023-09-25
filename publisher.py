@@ -157,13 +157,13 @@ if __name__ == '__main__':
         args.p12 = None
         args.authentication_type = 'p12'
         if not os.path.isfile(args.p12_key_path):
-            raise Exception(f'p12 key file not found: {args.p12_key_path}')
+            raise FileNotFoundError(f'p12 key file not found: {args.p12_key_path}')
     elif args.json:
         args.json_key_file = args.json[0]
         args.json = None
         args.authentication_type = 'json'
         if not os.path.isfile(args.json_key_file):
-            raise Exception(f'json key file not found: {args.json_key_file}')
+            raise FileNotFoundError(f'json key file not found: {args.json_key_file}')
 
     if args.release_notes_file == sys.stdin:
         mode = os.fstat(sys.stdin.fileno()).st_mode
@@ -177,6 +177,6 @@ if __name__ == '__main__':
     if args.upload_aab:
         # using a file type causes issues on ci, so check file exist here
         if not os.path.isfile(args.upload_aab):
-            raise Exception(f'File not found for --upload-aab: {args.upload_aab}')
+            raise FileNotFoundError(f'File not found for --upload-aab: {args.upload_aab}')
 
     __run_from_cli_args(args)
