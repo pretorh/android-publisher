@@ -11,16 +11,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Docker Login
-        uses: docker/login-action@v1.10.0
+        uses: docker/login-action@v3
         with:
           username: pretorh
           password: ${{ secrets.DOCKER_API_KEY }}
 
       - name: Build and push Docker images
-        uses: docker/build-push-action@v2.7.0
+        uses: docker/build-push-action@v5
         with:
           push: true
           tags: pretorh/android-publisher:edge
