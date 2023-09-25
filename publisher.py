@@ -14,10 +14,6 @@ def print_info():
     print(f'publisher.py: {SCRIPT_VERSION}')
     print('')
 
-def build_service(service_account_email, key_file):
-    print('WARNING: build_service will be removed. use build_service_from_p12')
-    return build_service_from_p12(service_account_email, key_file)
-
 def build_service_from_p12(service_account_email, key_file):
     print('setup credentials and building service')
     # build service acount using p12 file, based on
