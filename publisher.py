@@ -11,7 +11,7 @@ SCOPE = 'https://www.googleapis.com/auth/androidpublisher'
 SCRIPT_VERSION = '2021-08-22'
 
 def print_info():
-    print('publisher.py: %s' % SCRIPT_VERSION)
+    print(f'publisher.py: {SCRIPT_VERSION}')
     print('')
 
 def build_service(service_account_email, key_file):
@@ -30,7 +30,7 @@ def build_service_from_p12(service_account_email, key_file):
     return apiclient.discovery.build('androidpublisher', 'v3', http=http)
 
 def build_service_from_json_file(json_key_file):
-    print('setup credentials and building service from %s' % json_key_file)
+    print(f'setup credentials and building service from {json_key_file}')
     credentials = ServiceAccountCredentials.from_json_keyfile_name(json_key_file, scopes=[SCOPE])
 
     http = httplib2.Http()
@@ -41,11 +41,11 @@ def create_edit(service, package_name):
     request = service.edits().insert(body={}, packageName=package_name)
     result = request.execute()
     edit_id = result['id']
-    print('setup edit: %s' % (edit_id))
+    print(f'setup edit: {edit_id}')
     return edit_id
 
 def update_track(service, package_name, edit_id, track, version):
-    print('update track %s' % (track))
+    print(f'update track {track}')
     request = service.edits().tracks().update(
         editId=edit_id,
         track=track,
@@ -63,17 +63,18 @@ def update_track(service, package_name, edit_id, track, version):
             }]
         })
     response = request.execute()
-    print('setup with: %s' % (str(response['releases'])))
+    releases = str(response['releases'])
+    print(f'setup with: {releases}')
 
 def validate_and_commit_edit(service, package_name, edit_id):
     response = service.edits().validate(editId=edit_id, packageName=package_name).execute()
-    print('validated %s' % (response))
+    print(f'validated {response}')
 
     response = service.edits().commit(editId=edit_id, packageName=package_name).execute()
-    print('commited %s' % (response))
+    print(f'commited {response}')
 
 def upload_bundle(service, package_name, edit_id, aab_file):
-    print('uploading %s' % (aab_file))
+    print(f'uploading {aab_file}')
     request = service.edits().bundles().upload(
         editId=edit_id,
         packageName=package_name,
@@ -81,7 +82,7 @@ def upload_bundle(service, package_name, edit_id, aab_file):
         media_mime_type='application/octet-stream',
     )
     response = request.execute()
-    print('uploaded, %s' % (response))
+    print(f'uploaded, {response}')
 
 # running as cli
 
@@ -91,7 +92,7 @@ def __run_from_cli_args(flags):
     elif flags.authentication_type == 'json':
         service = build_service_from_json_file(flags.json_key_file)
     else:
-        raise ValueError('Unknown authentication type %s' % flags.authentication_type)
+        raise ValueError(f'Unknown authentication type {flags.authentication_type}')
 
     edit_id = create_edit(service, flags.package_name)
     if flags.upload_aab:
@@ -156,13 +157,13 @@ if __name__ == '__main__':
         args.p12 = None
         args.authentication_type = 'p12'
         if not os.path.isfile(args.p12_key_path):
-            raise Exception('p12 key file not found: %s' % args.p12_key_path)
+            raise Exception(f'p12 key file not found: {args.p12_key_path}')
     elif args.json:
         args.json_key_file = args.json[0]
         args.json = None
         args.authentication_type = 'json'
         if not os.path.isfile(args.json_key_file):
-            raise Exception('json key file not found: %s' % args.json_key_file)
+            raise Exception(f'json key file not found: {args.json_key_file}')
 
     if args.release_notes_file == sys.stdin:
         mode = os.fstat(sys.stdin.fileno()).st_mode
@@ -176,6 +177,6 @@ if __name__ == '__main__':
     if args.upload_aab:
         # using a file type causes issues on ci, so check file exist here
         if not os.path.isfile(args.upload_aab):
-            raise Exception('File not found for --upload-aab: %s' % args.upload_aab)
+            raise Exception(f'File not found for --upload-aab: {args.upload_aab}')
 
     __run_from_cli_args(args)
