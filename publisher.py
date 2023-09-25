@@ -51,15 +51,15 @@ def update_track(service, package_name, edit_id, track, version):
         track=track,
         packageName=package_name,
         body={
-            u'track': track,
-            u'releases': [{
-                u'name': version['name'],
-                u'versionCodes': [version['code']],
-                u'releaseNotes': [{
-                    u'language': u'en-GB',
-                    u'text': version['notes']
+            'track': track,
+            'releases': [{
+                'name': version['name'],
+                'versionCodes': [version['code']],
+                'releaseNotes': [{
+                    'language': 'en-GB',
+                    'text': version['notes']
                 }],
-                u'status': u'completed',
+                'status': 'completed',
             }]
         })
     response = request.execute()
